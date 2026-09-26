@@ -7,15 +7,17 @@
     "compile": "hardhat compile",
     "test": "hardhat test",
     "test:api": "mocha test-api --timeout 120000",
-    "test:all": "npm run test && npm run test:api && npm run test:frontend",
+    "test:all": "npm run test && npm run test:api && npm run test:frontend && npm run test:chain-local",
+    "test:chain-local": "node --experimental-strip-types --test src/services/chain.local.test.ts",
     "node": "hardhat node",
     "deploy:demo": "hardhat run scripts/deploy-demo.js --network localhost",
+    "deploy:testnet": "hardhat run scripts/deploy-testnet.js --network monadTestnet",
     "start": "node server/index.js",
     "dev": "vite --host 127.0.0.1",
     "dev:api": "nodemon server/index.js",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test:frontend": "node --experimental-strip-types --test src/services/draw.test.ts src/services/events.test.ts"
+    "test:frontend": "node --experimental-strip-types --test src/services/draw.test.ts src/services/events.test.ts src/services/chain.test.ts"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.2",

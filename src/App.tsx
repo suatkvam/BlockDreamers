@@ -17,6 +17,7 @@ import { accounts, statusOf } from "./services/draw";
 import type { Account, Action, Status } from "./services/draw";
 import { eventGateway } from "./services/events";
 import type { EventRecord } from "./services/events";
+import { connectWallet, ensureMonadTestnet } from "./services/wallet";
 const short = (s: string) => `${s.slice(0, 6)}…${s.slice(-4)}`;
 const statusLabel = (s: Status) => (s === "NotOpen" ? "Awaiting funding" : s);
 function timing(e: EventRecord, now: number) {
@@ -119,10 +120,28 @@ export default function App() {
   const auth = path === "/login";
   const listing = path === "/events";
   const currentStatus = selected ? statusOf(selected.state, now) : "NotOpen";
-  const sponsor = account?.address === accounts[0].address;
+  const sponsor = selected?.sponsorAddress
+    ? account?.address.toLowerCase() === selected.sponsorAddress.toLowerCase()
+    : account?.address === accounts[0].address;
+  async function openWallet() {
+    if (selected?.sponsorAddress) {
+      try {
+        const address = await connectWallet();
+        await ensureMonadTestnet();
+        setAccount({ name: "Connected wallet", address, role: "" });
+        setToast("Wallet connected");
+      } catch (e) {
+        setError(
+          e instanceof Error ? e.message : "Unable to connect wallet.",
+        );
+      }
+      return;
+    }
+    setWalletOpen(true);
+  }
   async function act(action: Action) {
     if (!account) {
-      setWalletOpen(true);
+      void openWallet();
       return;
     }
     if (!selected || lock.current) return;
@@ -184,7 +203,7 @@ export default function App() {
     <button
       className="button wallet"
       disabled={busy}
-      onClick={() => setWalletOpen(true)}
+      onClick={() => void openWallet()}
     >
       <Wallet size={16} />
       {account ? short(account.address) : "Connect Wallet"}
@@ -467,7 +486,7 @@ export default function App() {
                   ) : (
                     <button
                       className="button primary"
-                      onClick={() => setWalletOpen(true)}
+                      onClick={() => void openWallet()}
                     >
                       Connect selected wallet to claim
                     </button>
