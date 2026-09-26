@@ -163,9 +163,18 @@ export const eventGateway = {
   async list() {
     // Live reads are serialized across events (not just within one snapshot)
     // so three cards polling at once stay under the RPC's per-second budget.
+    // A single flaky live read must not take down the other 8 cards.
     const results: EventRecord[] = [];
     for (const e of events) {
-      results.push(isLive(e.id) ? await readLive(e) : { ...e });
+      if (!isLive(e.id)) {
+        results.push({ ...e });
+        continue;
+      }
+      try {
+        results.push(await readLive(e));
+      } catch {
+        results.push({ ...e });
+      }
     }
     return results;
   },
