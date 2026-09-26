@@ -161,9 +161,13 @@ async function readLive(event: EventRecord): Promise<EventRecord> {
 
 export const eventGateway = {
   async list() {
-    return Promise.all(
-      events.map((e) => (isLive(e.id) ? readLive(e) : Promise.resolve({ ...e }))),
-    );
+    // Live reads are serialized across events (not just within one snapshot)
+    // so three cards polling at once stay under the RPC's per-second budget.
+    const results: EventRecord[] = [];
+    for (const e of events) {
+      results.push(isLive(e.id) ? await readLive(e) : { ...e });
+    }
+    return results;
   },
   async execute(id: string, action: Action, account: string, amount?: number) {
     const event = events.find((e) => e.id === id);

@@ -174,6 +174,49 @@ export type DrawSnapshot = {
   selectedIndex: number | null;
 };
 
+// Monad Testnet's public RPC enforces a strict, sometimes bursty per-second
+// call budget (tighter in practice than its documented 25 rps for eth_call),
+// and a single snapshot read is ~13 calls. Run them one at a time with a
+// small gap, and retry with backoff on a rate-limit response, instead of one
+// big Promise.all -- otherwise three live cards polling at once trip
+// "requests limited to N/sec".
+const RPC_CALL_DELAY_MS = 80;
+const RATE_LIMIT_RETRIES = 4;
+const RATE_LIMIT_BACKOFF_MS = 400;
+
+function isRateLimitError(err: unknown): boolean {
+  const message =
+    (err as { info?: { error?: { message?: string } }; shortMessage?: string })
+      ?.info?.error?.message ??
+    (err as { shortMessage?: string })?.shortMessage ??
+    "";
+  return /limited to \d+\/sec|rate limit/i.test(message);
+}
+
+async function callWithRetry<T>(fn: () => Promise<T>): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (attempt >= RATE_LIMIT_RETRIES || !isRateLimitError(err)) throw err;
+      await new Promise((resolve) =>
+        setTimeout(resolve, RATE_LIMIT_BACKOFF_MS * (attempt + 1)),
+      );
+    }
+  }
+}
+
+async function chunkedAll<T>(fns: Array<() => Promise<T>>): Promise<T[]> {
+  const results: T[] = [];
+  for (let i = 0; i < fns.length; i++) {
+    results.push(await callWithRetry(fns[i]));
+    if (i < fns.length - 1) {
+      await new Promise((resolve) => setTimeout(resolve, RPC_CALL_DELAY_MS));
+    }
+  }
+  return results;
+}
+
 export async function readDrawSnapshot(
   drawAddress: string,
   tokenAddress: string,
@@ -195,24 +238,24 @@ export async function readDrawSnapshot(
     selectedIndex,
     decimals,
     symbol,
-  ] = await Promise.all([
-    draw.status(),
-    draw.sponsor(),
-    draw.prizeAmount(),
-    draw.fundedAmount(),
-    draw.ticketCap(),
-    draw.openAt(),
-    draw.closeAt(),
-    draw.participantCount(),
-    draw.winner(),
-    draw.drawSeed(),
-    draw.selectedIndex(),
-    token.decimals(),
-    token.symbol(),
+  ] = await chunkedAll([
+    () => draw.status(),
+    () => draw.sponsor(),
+    () => draw.prizeAmount(),
+    () => draw.fundedAmount(),
+    () => draw.ticketCap(),
+    () => draw.openAt(),
+    () => draw.closeAt(),
+    () => draw.participantCount(),
+    () => draw.winner(),
+    () => draw.drawSeed(),
+    () => draw.selectedIndex(),
+    () => token.decimals(),
+    () => token.symbol(),
   ]);
   const count = Number(participantCount);
-  const participants: string[] = await Promise.all(
-    Array.from({ length: count }, (_, i) => draw.participants(i)),
+  const participants: string[] = await chunkedAll(
+    Array.from({ length: count }, (_, i) => () => draw.participants(i)),
   );
   const isDrawn = winner !== ZeroAddress;
   return {
