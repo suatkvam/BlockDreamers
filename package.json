@@ -1,0 +1,28 @@
+{
+  "name": "monadraw-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MonadDraw contracts + API backend (testnet demo, not production)",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "test:api": "mocha test-api --timeout 120000",
+    "test:all": "npm run test && npm run test:api",
+    "node": "hardhat node",
+    "deploy:demo": "hardhat run scripts/deploy-demo.js --network localhost",
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.2",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.6",
+    "nodemon": "^3.1.4"
+  }
+}

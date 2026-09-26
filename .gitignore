@@ -13,3 +13,11 @@ states/
 # Optional
 .env
 .env.local
+# Local demo deployment output
+deployment.json
+
+# Node / Hardhat
+node_modules/
+cache/
+coverage/
+coverage.json

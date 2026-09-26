@@ -1,0 +1,22 @@
+[
+  { "type": "function", "name": "status", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "uint8" }] },
+  { "type": "function", "name": "sponsor", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "address" }] },
+  { "type": "function", "name": "prizeToken", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "address" }] },
+  { "type": "function", "name": "prizeAmount", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }] },
+  { "type": "function", "name": "fundedAmount", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }] },
+  { "type": "function", "name": "ticketCap", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }] },
+  { "type": "function", "name": "openAt", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "uint64" }] },
+  { "type": "function", "name": "closeAt", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "uint64" }] },
+  { "type": "function", "name": "participantCount", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }] },
+  { "type": "function", "name": "participants", "stateMutability": "view", "inputs": [{ "name": "index", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }] },
+  { "type": "function", "name": "isParticipant", "stateMutability": "view", "inputs": [{ "name": "account", "type": "address" }], "outputs": [{ "name": "", "type": "bool" }] },
+  { "type": "function", "name": "winner", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "address" }] },
+  { "type": "function", "name": "drawSeed", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "bytes32" }] },
+  { "type": "function", "name": "selectedIndex", "stateMutability": "view", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }] },
+  { "type": "function", "name": "fundDraw", "stateMutability": "nonpayable", "inputs": [{ "name": "amount", "type": "uint256" }], "outputs": [] },
+  { "type": "function", "name": "mintTicket", "stateMutability": "nonpayable", "inputs": [], "outputs": [] },
+  { "type": "function", "name": "executeDraw", "stateMutability": "nonpayable", "inputs": [], "outputs": [] },
+  { "type": "function", "name": "claimPrize", "stateMutability": "nonpayable", "inputs": [], "outputs": [] },
+  { "type": "function", "name": "sponsorCancelDraw", "stateMutability": "nonpayable", "inputs": [], "outputs": [] },
+  { "type": "function", "name": "sponsorForfeitPrize", "stateMutability": "nonpayable", "inputs": [], "outputs": [] }
+]
