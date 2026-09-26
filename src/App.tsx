@@ -17,7 +17,7 @@ import { accounts, statusOf } from "./services/draw";
 import type { Account, Action, Status } from "./services/draw";
 import { eventGateway } from "./services/events";
 import type { EventRecord } from "./services/events";
-import { connectWallet, ensureMonadTestnet } from "./services/wallet";
+import { connectWallet, ensureMonadTestnet, hasInjectedWallet } from "./services/wallet";
 const short = (s: string) => `${s.slice(0, 6)}…${s.slice(-4)}`;
 const statusLabel = (s: Status) => (s === "NotOpen" ? "Awaiting funding" : s);
 function timing(e: EventRecord, now: number) {
@@ -124,7 +124,12 @@ export default function App() {
     ? account?.address.toLowerCase() === selected.sponsorAddress.toLowerCase()
     : account?.address === accounts[0].address;
   async function openWallet() {
-    if (selected?.sponsorAddress) {
+    // Real MetaMask connect whenever a wallet extension exists and we are
+    // not looking at one of the fixture-only cards (those still need the
+    // 3-account picker, since their state only recognizes those addresses).
+    const wantsRealWallet =
+      hasInjectedWallet() && (!selected || !!selected.sponsorAddress);
+    if (wantsRealWallet) {
       try {
         const address = await connectWallet();
         await ensureMonadTestnet();
@@ -753,7 +758,7 @@ export default function App() {
               <button
                 type="button"
                 className="button"
-                onClick={() => setWalletOpen(true)}
+                onClick={() => void openWallet()}
               >
                 <Wallet size={17} />
                 {account ? short(account.address) : "Connect Wallet"}
