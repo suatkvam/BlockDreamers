@@ -24,3 +24,5 @@ coverage.json
 
 
 dist/
+.vercel
+.env*
