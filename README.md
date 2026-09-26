@@ -1,38 +1,77 @@
-# MonadDraw frontend
+# MonadDraw
 
-The frontend follows the four screens in MonadDraw.pdf, retaining the requested muted purple-to-blue diagonal palette.
+Trustless testnet demo: sponsor funds prize, participants mint NFT tickets, one participant gets selected, winner claims prize on-chain.
 
-## Pages
+## Scope and Disclaimer
 
-- `/`: introduction, featured draw, community event, totals and how it works.
-- `/login`: login / create-account forms and wallet connection entry point.
-- `/events`: nine event cards with All / Open / Closed / Drawn / Settled / Cancelled filters.
-- `/events/:id`: independent event data, ticket minting, selection, claim, transparency and participant list.
+MonadDraw is a hackathon testnet demonstration of a transparent prize distribution engine.
 
-## Run and build
+- No real funds are accepted.
+- No real-world assets are transferred.
+- Tickets are not sold.
+- There is no paid entry.
+- There is no operator profit mechanism.
+- The demo uses test tokens and local/testnet environments only.
+
+This project is intended as a technical protocol demonstration, not a live production service.
+
+## Stack
+
+- Contracts: `contracts/PrizeDraw.sol`, `contracts/PrizeToken.sol` (Hardhat, Solidity 0.8.24)
+- API: `server/` (Express)
+- Frontend: `src/` (React + Vite + Tailwind)
+
+## Setup
 
 ```sh
 npm install
-npm run dev
-npm test
-npm run build
-npm run preview
+cp .env.example .env   # PRIVATE_KEY, RPC_URL, MONAD_TESTNET_RPC_URL as needed
 ```
 
-Node 24 recommended. Build output: `dist`. The existing Vercel SPA rewrite supports direct navigation and refreshing all routes. No publication has been performed.
+## Contracts
 
-## Review flow
+```sh
+npm run compile
+npm test                    # hardhat test
+npm run node                # local Anvil-equivalent EVM (Hardhat node)
+npm run deploy:demo         # deploy PrizeToken + PrizeDraw to localhost, writes deployment.json
+npm run deploy:testnet      # deploy to monadTestnet (requires PRIVATE_KEY + MONAD_TESTNET_RPC_URL)
+```
 
-Open All draws, choose Builder Grant Draw, connect Sam Rivera, and mint a ticket. The count updates on both detail and list pages. Duplicate mint is disabled.
+## API + Frontend
 
-To review selection without waiting hours, open the already-closed Community Playtest Draw. Connect Jordan Lee, execute selection, then claim 120 DPRZ. Check the updated list status and home totals. Each event has independent state. Reload resets fixtures.
+```sh
+npm run dev:api             # server/index.js on PORT (default 3001)
+npm run dev                 # vite dev server
+npm run build && npm run preview
+```
 
-## Integration status
+## Tests
 
-All accounts, event states and authentication responses are in-memory frontend fixtures. No wallet connection, authentication server, blockchain transaction or external network write is performed. Password inputs are discarded and never persisted. This is not production authentication. Replace the marked adapters before using real accounts.
+```sh
+npm run test            # contracts (hardhat)
+npm run test:api        # API integration tests
+npm run test:frontend   # frontend unit tests
+npm run test:chain-local
+npm run test:all         # everything above
+```
 
-See INTEGRATION.md for backend and contract handoff details.
+## Demo flow
 
-## Scope
+1. Run `npm run node` (local chain), then `npm run deploy:demo` — sponsor funds the prize with a demo ERC20 token.
+2. Start API (`npm run dev:api`) and frontend (`npm run dev`).
+3. Open `/events`, pick an open draw, connect a wallet, mint a participation ticket.
+4. After the participation window closes, execute selection on the closed draw.
+5. Winner claims the prize; transparency data (participants, selection, claim) is visible in the event detail view.
 
-Testnet/local technical demonstration. No real funds or assets are transferred, tickets are not sold, and no operator profit is implemented. The PDF adds multiple-event navigation and authentication UI beyond the original MD's single-event frontend. Actual backend authentication and contract integration remain separate work.
+## UI copy rules
+
+Use: participation ticket, prize event, participant selection, sponsor-funded prize, transparent selection, testnet demo.
+Avoid: buy ticket, pay to enter, raffle, lottery, odds, chance to win, organizer profit, ticket sale.
+
+## Docs
+
+- `MonaDraw.md` — canonical build spec, source of truth for scope/acceptance criteria.
+- `INTEGRATION.md` — backend/contract handoff details for the frontend.
+
+Node 24 recommended (`--experimental-strip-types` used by test scripts).
