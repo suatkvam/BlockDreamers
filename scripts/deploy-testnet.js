@@ -7,8 +7,8 @@ const { ethers } = require("hardhat");
 // the time a human finishes this script's output and opens the browser --
 // no artificial sleep here, just a short window and an honest close-time log.
 const EVENTS = [
-  { id: "builder-grant", prize: "500", cap: 128, duration: 3600 },
-  { id: "docs-sprint", prize: "80", cap: 200, duration: 3600 },
+  { id: "builder-grant", prize: "500", cap: 128, duration: 15 },
+  { id: "docs-sprint", prize: "80", cap: 200, duration: 15 },
   { id: "community-playtest", prize: "120", cap: 64, duration: 90 },
 ];
 

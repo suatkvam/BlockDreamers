@@ -14,9 +14,9 @@ export type EventRecord = {
 };
 const definitions: [string, string, number, number, number, Status, number][] =
   [
-    ["builder-grant", "Builder Grant Draw", 500, 128, 500, "Open", 15120],
+    ["builder-grant", "Builder Grant Draw", 500, 128, 500, "Open", 15],
     ["community-playtest", "Community Playtest Draw", 120, 64, 64, "Closed", 0],
-    ["docs-sprint", "Docs Sprint Draw", 80, 19, 200, "Open", 97200],
+    ["docs-sprint", "Docs Sprint Draw", 80, 19, 200, "Open", 15],
     ["testnet-explorer", "Testnet Explorer Draw", 250, 300, 300, "Drawn", 0],
     ["bug-bounty", "Bug Bounty Draw", 60, 40, 40, "Settled", 0],
     ["onboarding", "Onboarding Draw", 30, 7, 50, "Open", 194400],
