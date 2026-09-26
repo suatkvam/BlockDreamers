@@ -21,3 +21,6 @@ node_modules/
 cache/
 coverage/
 coverage.json
+
+
+dist/
